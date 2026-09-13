@@ -60,5 +60,10 @@ build-iPhoneSimulator/
 
 .DS_Store
 
-## Claude Code settings (user-specific)
-.claude/
+## Claude Code settings: user-specific state stays out, the checked-in
+## project settings (which enable the lode plugin) go in.
+.claude/*
+!.claude/settings.json
+
+## Lode scratch: gate reports, handovers, evidence
+/lode/tmp/
