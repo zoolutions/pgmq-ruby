@@ -14,6 +14,6 @@ Accepted review findings from merged PR threads on `mensfeld/pgmq-ruby`, rewritt
 - **Origin:** PR #59 review thread (three arity corrections), PR #17 (`.yard-lint.yml` wording)
 
 ### Prose that opens a line with `Note:` or `Returns:` fails the lint
-- **Holds because:** `Tags/InformalNotation` (`.yard-lint.yml:177-197`) maps `Note:`, `Returns:`, `Raises:`, `Example:`, `See:`, `Todo:`, `Warning:`, `Deprecated:`, `Author:`, `Version:` and `Since:` to their tags, with `RequireStartOfLine: true` and `CaseSensitive: false`. Severity is `warning`, which `FailOnSeverity: convention` still fails on. Use the tag.
+- **Holds because:** `Tags/InformalNotation` (`.yard-lint.yml:177-196`) maps fourteen informal prefixes to tags: `Note:`, `Returns:`, `Raises:`, `Example:`, `See:`, `See also:`, `Todo:`, `TODO:`, `FIXME:`, `Warning:`, `Deprecated:`, `Author:`, `Version:` and `Since:`, with `RequireStartOfLine: true` and `CaseSensitive: false`. Severity is `warning`, which `FailOnSeverity: convention` still fails on. Use the tag.
 - **Where:** `.yard-lint.yml`, every doc block in `lib/`
 - **Origin:** PR #27 review thread (the config change that made `convention` the failure threshold)
