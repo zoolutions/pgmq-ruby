@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Memory
+
+Durable project memory lives in `lode/` (index: `lode/lode-map.md`). Read it before exploring the code. `lode/review/` holds accepted review findings as rules about the system; `/lode:gate` enforces them before any push, and `/lode:learn` adds to them. `lode/workflow.md` is the profile the shared `/lode:` workflow skills read for this repository's commands, layers, constraints and CI.
+
+Two facts that orient everything else: `README.md` is the single user-facing document (896 lines — the PGMQ Feature Support table and the API Reference), and `zoolutions/pgmq-ruby` is a fork of `mensfeld/pgmq-ruby` whose `master` carries no commits of its own, so a fix that is not fork-specific belongs upstream.
+
 ## Project Overview
 
 PGMQ-Ruby is a **low-level Ruby client** for PGMQ (PostgreSQL Message Queue), analogous to how rdkafka-ruby relates to Kafka. It provides direct 1:1 wrappers for PGMQ SQL functions as a thin transport layer.
