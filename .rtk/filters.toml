@@ -1,0 +1,137 @@
+# Project-local RTK filters (https://github.com/rtk-ai/rtk#custom-filters).
+#
+# The `rtk hook claude` PreToolUse hook rewrites a matching command to
+# `rtk <cmd>`; rtk runs it and drops the lines listed here before the agent
+# sees the output. Filters are line-based: they strip noise, never reformat.
+#
+# `match_command` is matched against the command with the first word reduced
+# to its basename, so `bin/integrations`, `./bin/integrations` and
+# `integrations` all hit `^integrations\b`.
+#
+# Trust is a SHA-256 of this file: after every edit run `rtk trust --yes`,
+# then `rtk verify` to run the inline tests.
+schema_version = 1
+
+[filters.rake-test]
+filter_stderr = true
+description = "bundle exec rake test: drop SimpleCov deprecation boilerplate and Postgres/PGMQ NOTICE chatter interleaved in the dot-progress output, keep the run summary and pass/fail/skip counts"
+match_command = "^(?:bundle\\s+exec\\s+)?rake\\s+test\\b"
+strip_lines_matching = [
+  "^\\s*$",
+  "\\[DEPRECATION\\] `SimpleCov\\.add_filter` is deprecated",
+  "NOTICE:",
+]
+on_empty = "rake test: no output left after filtering (check the exit code)"
+
+[[tests.rake-test]]
+name = "drops SimpleCov deprecation warnings and Postgres NOTICE chatter, keeps the summary"
+input = """
+/Users/dev/pgmq-ruby/test/test_helper.rb:7:in 'block in <top (required)>': [DEPRECATION] `SimpleCov.add_filter` is deprecated. Replace with `SimpleCov.skip` (same arguments, same behavior). Example: `SimpleCov.skip "/test/"`.
+/Users/dev/pgmq-ruby/test/test_helper.rb:8:in 'block in <top (required)>': [DEPRECATION] `SimpleCov.add_filter` is deprecated. Replace with `SimpleCov.skip` (same arguments, same behavior). Example: `SimpleCov.skip "/spec/"`.
+/Users/dev/pgmq-ruby/test/test_helper.rb:9:in 'block in <top (required)>': [DEPRECATION] `SimpleCov.add_filter` is deprecated. Replace with `SimpleCov.skip` (same arguments, same behavior). Example: `SimpleCov.skip "/examples/"`.
+/Users/dev/pgmq-ruby/test/test_helper.rb:10:in 'block in <top (required)>': [DEPRECATION] `SimpleCov.add_filter` is deprecated. Replace with `SimpleCov.skip` (same arguments, same behavior). Example: `SimpleCov.skip "/vendor/"`.
+Run options: --seed 826
+
+# Running:
+
+.....................NOTICE:  trigger "trigger_notify_queue_insert_listeners" for relation "pgmq.q_test_queue_0ebede59" does not exist, skipping
+............NOTICE:  pgmq queue `test_queue_bf23b06e` does not exist
+.........NOTICE:  pgmq queue `test_queue_2f7c2cd2` does not exist
+....................................
+
+Finished in 49.018767s, 5.4469 runs/s, 12.7502 assertions/s.
+
+267 runs, 625 assertions, 0 failures, 0 errors, 2 skips
+
+You have skipped tests. Run with --verbose for details.
+Coverage report generated for Minitest to coverage/index.html
+Line coverage: 466 / 481 (96.88%)
+"""
+expected = """Run options: --seed 826
+# Running:
+....................................
+Finished in 49.018767s, 5.4469 runs/s, 12.7502 assertions/s.
+267 runs, 625 assertions, 0 failures, 0 errors, 2 skips
+You have skipped tests. Run with --verbose for details.
+Coverage report generated for Minitest to coverage/index.html
+Line coverage: 466 / 481 (96.88%)"""
+
+[filters.integrations]
+filter_stderr = true
+description = "bin/integrations: drop decorative example banners and per-spec success/cleanup chatter, keep spec markers, failures and the final pass/fail summary"
+match_command = "^integrations\\b"
+strip_lines_matching = [
+  "^\\s*$",
+  "^=+$",
+  "^Example: ",
+  "^Example completed successfully\\.$",
+  "^Cleaning up \\d+ queue\\(s\\)\\.\\.\\.$",
+  "^\\s+Dropped: ",
+  "IO::Buffer is experimental",
+]
+on_empty = "integrations: no output left after filtering (check the exit code)"
+
+[[tests.integrations]]
+name = "drops banners and cleanup chatter, keeps spec markers and real output"
+input = """Running 19 integration spec(s)...
+
+[1/19] Running archiving_spec.rb...
+============================================================
+Example: Message Archiving
+============================================================
+
+Produced 3 messages
+Archived message 1 (available in pgmq.a_archive_4d67c326)
+Archived 2 more messages
+Queue length: 0, Total ever: 3
+
+Example completed successfully.
+
+Cleaning up 1 queue(s)...
+  Dropped: archive_4d67c326
+
+[2/19] Running basic_produce_consume_spec.rb...
+============================================================
+Example: Basic Produce/Consume
+============================================================
+
+Queue created: basic_22ea2f7b
+Produced message ID: 1
+Read: order_id=12345, amount=$99.99
+Message deleted
+
+Example completed successfully.
+
+Cleaning up 1 queue(s)...
+  Dropped: basic_22ea2f7b
+"""
+expected = """Running 19 integration spec(s)...
+[1/19] Running archiving_spec.rb...
+Produced 3 messages
+Archived message 1 (available in pgmq.a_archive_4d67c326)
+Archived 2 more messages
+Queue length: 0, Total ever: 3
+[2/19] Running basic_produce_consume_spec.rb...
+Queue created: basic_22ea2f7b
+Produced message ID: 1
+Read: order_id=12345, amount=$99.99
+Message deleted"""
+
+[[tests.integrations]]
+name = "final summary line survives the separator strip"
+input = """Example completed successfully.
+
+Cleaning up 1 queue(s)...
+  Dropped: vt_e64d2239
+
+============================================================
+All 19 integration spec(s) passed.
+"""
+expected = """All 19 integration spec(s) passed."""
+
+[[tests.integrations]]
+name = "drops the trailing IO::Buffer experimental warning from the async fiber scheduler spec"
+input = """All 19 integration spec(s) passed.
+/Users/dev/.rubies/ruby-4.0.7/lib/ruby/4.0.0/resolv.rb:207: warning: IO::Buffer is experimental and both the Ruby and C interface may change in the future!
+"""
+expected = """All 19 integration spec(s) passed."""
