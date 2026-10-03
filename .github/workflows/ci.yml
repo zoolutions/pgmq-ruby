@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby:
-          - '4.0.0'
+          - '4.0'
           - '3.4'
           - '3.3'
         postgres:
@@ -124,7 +124,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
         with:
-          ruby-version: '4.0.2'
+          ruby-version: '4.0'
           bundler-cache: true
       - name: Run yard-lint
         run: bundle exec yard-lint lib/
@@ -141,7 +141,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
         with:
-          ruby-version: '4.0.2'
+          ruby-version: '4.0'
           bundler-cache: true
       - name: Run rubocop
         run: bundle exec rubocop
