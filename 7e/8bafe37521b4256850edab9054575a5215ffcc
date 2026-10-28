@@ -1,0 +1,21 @@
+lib/pgmq/client.rb
+  s_165df0763d8550::t_779aff3fa3c4cc 182-185,189-191
+test/support/duration_like.rb
+  s_165df0763d8550::t_1ff3cfeb537012 1-13,15-18,20-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "7e8bafe37521b4256850edab9054575a5215ffcc",
+  "prompts": {},
+  "sessions": {
+    "s_165df0763d8550": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3661b7f8-a7bf-4ab4-999d-82f5a0802564",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "mhenrixon <mikael@mhenrixon.com>"
+    }
+  }
+}
